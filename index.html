@@ -2568,7 +2568,7 @@ function expWord(){
     const tbl=(rows)=>new Table({width:{size:W,type:WidthType.DXA},columnWidths:[C1,C2],rows:rows.filter(([,v])=>v&&String(v).trim()).map(([k,v],i)=>new TableRow({children:[
       new TableCell({borders:bdrs,width:{size:C1,type:WidthType.DXA},shading:{fill:i%2===0?'EBF5FB':'FFFFFF',type:ShadingType.CLEAR},margins:{top:60,bottom:60,left:100,right:100},children:[new Paragraph({children:[new TextRun({text:String(k),font:'Calibri',size:20,bold:true,color:'C8922A'})]})] }),
       new TableCell({borders:bdrs,width:{size:C2,type:WidthType.DXA},shading:{fill:i%2===0?'EBF5FB':'FFFFFF',type:ShadingType.CLEAR},margins:{top:60,bottom:60,left:100,right:100},children:[new Paragraph({children:[new TextRun({text:String(v),font:'Calibri',size:20,color:'1C2833'})]})]}),
-    ]})});
+    ]}))});
     const ap=d.avaliacao.parecer;
     const apTxt=ap==='s'?'PONTO APROVADO — Sorveteria recomendada':ap==='n'?'PONTO REPROVADO — Não recomendado':'PARECER PENDENTE';
     const apCor=ap==='s'?'27AE60':ap==='n'?'E74C3C':'5D6D7E';
