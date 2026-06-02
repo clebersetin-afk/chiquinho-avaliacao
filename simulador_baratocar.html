@@ -1,0 +1,611 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Simulador de Financiamento — Baratocar Repasses</title>
+<meta name="description" content="Simule o financiamento do seu veículo em segundos. Baratocar Repasses — Intermediações e Repasses em Pouso Alegre, MG.">
+<meta property="og:title" content="Simulador de Financiamento — Baratocar">
+<meta property="og:description" content="Simule as parcelas do seu carro agora. Rápido, fácil e sem compromisso.">
+<meta property="og:type" content="website">
+<meta name="theme-color" content="#c0392b">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800&family=Nunito:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --red:#c0392b;--red-dark:#a93226;--red-light:#e8d5d3;
+  --black:#111;--dark:#1a1a1a;--mid:#444;--muted:#777;--border:#ddd;
+  --bg:#f7f7f7;--white:#fff;
+  --gold:#e8a020;
+  --radius:12px;--radius-sm:8px;
+  --shadow:0 2px 12px rgba(0,0,0,.09);
+  --font-head:'Montserrat',sans-serif;
+  --font-body:'Nunito',sans-serif;
+}
+html{scroll-behavior:smooth}
+body{font-family:var(--font-body);background:var(--bg);color:var(--dark);min-height:100vh;-webkit-font-smoothing:antialiased}
+
+/* ── HEADER ── */
+.header{background:var(--dark);padding:0;position:sticky;top:0;z-index:100;box-shadow:0 2px 8px rgba(0,0,0,.3)}
+.header-inner{max-width:640px;margin:0 auto;padding:12px 20px;display:flex;align-items:center;justify-content:space-between;gap:12px}
+.logo-wrap{display:flex;align-items:center;gap:10px}
+.logo-icon{width:38px;height:38px;background:var(--red);border-radius:50%;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.logo-icon svg{width:22px;height:22px;fill:#fff}
+.logo-text{line-height:1.1}
+.logo-text strong{font-family:var(--font-head);font-size:15px;font-weight:800;color:#fff;letter-spacing:.5px}
+.logo-text span{display:block;font-size:10px;color:#aaa;font-weight:500;letter-spacing:.3px}
+.header-badge{background:var(--red);color:#fff;font-family:var(--font-head);font-size:10px;font-weight:700;padding:4px 10px;border-radius:20px;white-space:nowrap;letter-spacing:.3px}
+
+/* ── HERO ── */
+.hero{background:linear-gradient(135deg,var(--dark) 0%,#2c2c2c 100%);padding:32px 20px 28px;text-align:center;border-bottom:3px solid var(--red)}
+.hero-tag{display:inline-block;background:rgba(192,57,43,.18);border:1px solid rgba(192,57,43,.4);color:#f0a09a;font-family:var(--font-head);font-size:11px;font-weight:600;padding:4px 14px;border-radius:20px;margin-bottom:14px;letter-spacing:.5px;text-transform:uppercase}
+.hero h1{font-family:var(--font-head);font-size:clamp(22px,5vw,30px);font-weight:800;color:#fff;line-height:1.2;margin-bottom:8px}
+.hero h1 span{color:var(--red)}
+.hero p{font-size:14px;color:#bbb;max-width:400px;margin:0 auto 20px;line-height:1.6}
+.hero-pills{display:flex;gap:8px;justify-content:center;flex-wrap:wrap}
+.pill{background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.12);color:#ddd;font-size:12px;padding:5px 12px;border-radius:20px;display:flex;align-items:center;gap:5px}
+.pill svg{width:13px;height:13px;fill:var(--red);flex-shrink:0}
+
+/* ── AVISO ── */
+.aviso-box{max-width:640px;margin:20px auto 0;padding:0 16px}
+.aviso-inner{background:#fffbea;border:1px solid #f0c040;border-radius:var(--radius-sm);padding:12px 16px;display:flex;gap:10px;align-items:flex-start}
+.aviso-icon{font-size:18px;flex-shrink:0;margin-top:1px}
+.aviso-text{font-size:12px;color:#7a5c00;line-height:1.6}
+.aviso-text strong{color:#5a4200;font-weight:700}
+
+/* ── CONTAINER ── */
+.container{max-width:640px;margin:0 auto;padding:20px 16px 120px}
+
+/* ── CARD ── */
+.card{background:var(--white);border-radius:var(--radius);box-shadow:var(--shadow);padding:20px;margin-bottom:16px;border:1px solid #eee}
+.card-title{font-family:var(--font-head);font-size:13px;font-weight:700;color:var(--mid);text-transform:uppercase;letter-spacing:.6px;margin-bottom:16px;display:flex;align-items:center;gap:8px}
+.card-title::before{content:'';display:block;width:3px;height:16px;background:var(--red);border-radius:2px;flex-shrink:0}
+
+/* ── FORM ── */
+.form-row{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:12px}
+.form-row.full{grid-template-columns:1fr}
+.field{display:flex;flex-direction:column;gap:5px}
+label{font-size:12px;font-weight:600;color:var(--mid);font-family:var(--font-head)}
+label .req{color:var(--red);margin-left:2px}
+input[type=text],input[type=tel],input[type=number],select{
+  width:100%;padding:11px 13px;border:1.5px solid var(--border);border-radius:var(--radius-sm);
+  font-family:var(--font-body);font-size:14px;color:var(--dark);background:#fff;
+  transition:border-color .2s;-webkit-appearance:none;appearance:none;outline:none
+}
+input:focus,select:focus{border-color:var(--red)}
+input.err{border-color:var(--red);background:#fff8f8}
+.err-msg{font-size:11px;color:var(--red);display:none;margin-top:2px}
+.err-msg.show{display:block}
+.hint{font-size:11px;color:var(--muted);margin-top:3px}
+select{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath fill='%23777' d='M6 8L0 0h12z'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 13px center;padding-right:34px}
+
+/* ── BANCO GRID ── */
+.banco-label{font-size:12px;font-weight:600;color:var(--mid);font-family:var(--font-head);margin-bottom:6px;display:block}
+.banco-hint{font-size:11px;color:var(--muted);margin-bottom:10px}
+.banco-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:4px}
+@media(min-width:400px){.banco-grid{grid-template-columns:repeat(3,1fr)}}
+.bc{border:1.5px solid var(--border);border-radius:var(--radius-sm);padding:9px 8px;cursor:pointer;transition:all .15s;text-align:center;background:#fff;-webkit-tap-highlight-color:transparent}
+.bc:active{transform:scale(.97)}
+.bc.on{border-color:var(--red);background:#fff2f1}
+.bc-name{font-family:var(--font-head);font-size:11px;font-weight:700;color:var(--dark);margin-bottom:2px}
+.bc-rate{font-size:10px;color:var(--muted)}
+.bc.on .bc-name{color:var(--red)}
+.bc.on .bc-rate{color:var(--red-dark)}
+
+/* ── METRICS ── */
+.metrics{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:4px}
+.metric{background:var(--bg);border-radius:var(--radius-sm);padding:12px 14px;border:1px solid #eee}
+.metric.destaque{background:var(--red);border-color:var(--red)}
+.metric-label{font-size:11px;color:var(--muted);font-family:var(--font-head);font-weight:600;text-transform:uppercase;letter-spacing:.4px;margin-bottom:4px}
+.metric.destaque .metric-label{color:rgba(255,255,255,.8)}
+.metric-value{font-family:var(--font-head);font-size:20px;font-weight:800;color:var(--dark)}
+.metric.destaque .metric-value{color:#fff;font-size:22px}
+.metric-sub{font-size:10px;color:var(--muted);margin-top:2px}
+.metric.destaque .metric-sub{color:rgba(255,255,255,.7)}
+
+/* ── FLUXO ── */
+.fluxo-wrap{overflow:hidden;transition:max-height .3s ease;max-height:0}
+.fluxo-wrap.open{max-height:400px}
+.fluxo-scroll{overflow-y:auto;max-height:360px;border:1px solid var(--border);border-radius:var(--radius-sm)}
+.ftbl{width:100%;border-collapse:collapse;font-size:12px}
+.ftbl th{position:sticky;top:0;background:var(--dark);color:#fff;padding:8px 10px;text-align:right;font-family:var(--font-head);font-size:10px;font-weight:700;letter-spacing:.3px;white-space:nowrap}
+.ftbl th:first-child{text-align:center}
+.ftbl td{padding:7px 10px;border-bottom:1px solid #f0f0f0;text-align:right;color:var(--dark)}
+.ftbl td:first-child{text-align:center;color:var(--muted);font-weight:600}
+.ftbl td.tj{color:#c0392b}
+.ftbl td.ta{color:#27ae60}
+.ftbl td.ts{color:var(--muted);font-size:11px}
+.ftbl tr:last-child td{border-bottom:none}
+.ftbl tr:nth-child(even){background:#fafafa}
+.tgl-btn{width:100%;background:none;border:1.5px solid var(--border);border-radius:var(--radius-sm);padding:10px;font-family:var(--font-head);font-size:12px;font-weight:600;color:var(--mid);cursor:pointer;display:flex;align-items:center;justify-content:center;gap:6px;margin-bottom:12px;transition:all .15s}
+.tgl-btn:hover{border-color:var(--red);color:var(--red)}
+.tgl-icon{transition:transform .3s;display:inline-block}
+.tgl-icon.open{transform:rotate(180deg)}
+
+/* ── BOTÕES ── */
+.btn-finalizar{width:100%;background:var(--red);color:#fff;border:none;border-radius:var(--radius);padding:15px 20px;font-family:var(--font-head);font-size:15px;font-weight:700;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px;transition:all .15s;letter-spacing:.3px;margin-bottom:10px;-webkit-tap-highlight-color:transparent}
+.btn-finalizar:hover{background:var(--red-dark)}
+.btn-finalizar:active{transform:scale(.98)}
+.btn-finalizar svg{width:18px;height:18px;fill:#fff;flex-shrink:0}
+.btn-wpp{width:100%;background:#25d366;color:#fff;border:none;border-radius:var(--radius);padding:13px 20px;font-family:var(--font-head);font-size:14px;font-weight:700;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px;transition:all .15s;letter-spacing:.3px;text-decoration:none;-webkit-tap-highlight-color:transparent}
+.btn-wpp:hover{background:#1ebe5a}
+.btn-wpp:active{transform:scale(.98)}
+.btn-wpp svg{width:18px;height:18px;fill:#fff;flex-shrink:0}
+
+/* ── TOAST ── */
+.toast{position:fixed;bottom:80px;left:50%;transform:translateX(-50%) translateY(20px);background:#1a1a1a;color:#fff;font-family:var(--font-head);font-size:13px;font-weight:600;padding:12px 20px;border-radius:30px;box-shadow:0 4px 20px rgba(0,0,0,.3);opacity:0;transition:all .3s;pointer-events:none;white-space:nowrap;z-index:200;max-width:90vw;text-align:center}
+.toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+
+/* ── FAB WHATSAPP ── */
+.fab{position:fixed;bottom:20px;right:20px;z-index:150;background:#25d366;color:#fff;border:none;border-radius:50%;width:52px;height:52px;display:flex;align-items:center;justify-content:center;box-shadow:0 4px 16px rgba(37,211,102,.4);cursor:pointer;text-decoration:none;-webkit-tap-highlight-color:transparent;transition:transform .15s}
+.fab:active{transform:scale(.92)}
+.fab svg{width:26px;height:26px;fill:#fff}
+
+/* ── RODAPÉ ── */
+.footer{background:var(--dark);color:#999;text-align:center;padding:20px;font-size:11px;line-height:1.8;border-top:3px solid var(--red)}
+.footer strong{color:#ddd}
+.footer a{color:#aaa;text-decoration:none}
+
+/* ── MOBILE ── */
+@media(max-width:380px){
+  .form-row{grid-template-columns:1fr}
+  .banco-grid{grid-template-columns:repeat(2,1fr)}
+  .metrics{grid-template-columns:1fr}
+}
+</style>
+</head>
+<body>
+
+<!-- HEADER -->
+<header class="header">
+  <div class="header-inner">
+    <div class="logo-wrap">
+      <div class="logo-icon">
+        <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M18.92 6.01C18.72 5.42 18.16 5 17.5 5h-11c-.66 0-1.21.42-1.42 1.01L3 12v8c0 .55.45 1 1 1h1c.55 0 1-.45 1-1v-1h12v1c0 .55.45 1 1 1h1c.55 0 1-.45 1-1v-8l-2.08-5.99zM6.85 7h10.29l1.08 3.11H5.77L6.85 7zM19 17H5v-5h14v5zM7.5 14c-.83 0-1.5.67-1.5 1.5S6.67 17 7.5 17 9 16.33 9 15.5 8.33 14 7.5 14zm9 0c-.83 0-1.5.67-1.5 1.5s.67 1.5 1.5 1.5 1.5-.67 1.5-1.5-.67-1.5-1.5-1.5z"/></svg>
+      </div>
+      <div class="logo-text">
+        <strong>BARATOCAR</strong>
+        <span>Intermediações e Repasses</span>
+      </div>
+    </div>
+    <span class="header-badge">SIMULADOR</span>
+  </div>
+</header>
+
+<!-- HERO -->
+<div class="hero">
+  <span class="hero-tag">📍 Pouso Alegre &mdash; MG</span>
+  <h1>Simule o financiamento<br>do seu <span>próximo carro</span></h1>
+  <p>Calcule suas parcelas em segundos, compare bancos e receba a simulação no seu e-mail.</p>
+  <div class="hero-pills">
+    <span class="pill"><svg viewBox="0 0 24 24"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg>Sem compromisso</span>
+    <span class="pill"><svg viewBox="0 0 24 24"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg>PDF automático</span>
+    <span class="pill"><svg viewBox="0 0 24 24"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg>Carros abaixo da tabela</span>
+  </div>
+</div>
+
+<!-- AVISO -->
+<div class="aviso-box">
+  <div class="aviso-inner">
+    <span class="aviso-icon">⚠️</span>
+    <p class="aviso-text"><strong>Simulação informativa:</strong> Os valores calculados são estimativas com base na taxa de referência do banco selecionado. A aprovação, taxa real e parcelas definitivas dependem exclusivamente da análise e aprovação do banco ou financeira de sua escolha. Esta simulação não constitui proposta ou garantia de crédito.</p>
+  </div>
+</div>
+
+<!-- CONTEÚDO -->
+<div class="container">
+
+  <!-- DADOS PESSOAIS -->
+  <div class="card">
+    <p class="card-title">Seus dados</p>
+    <div class="form-row">
+      <div class="field">
+        <label for="nome">Nome completo<span class="req">*</span></label>
+        <input type="text" id="nome" placeholder="Ex: João da Silva">
+        <span class="err-msg" id="err-nome">Informe seu nome.</span>
+      </div>
+      <div class="field">
+        <label for="fone">WhatsApp<span class="req">*</span></label>
+        <input type="tel" id="fone" placeholder="(35) 99999-9999" maxlength="15">
+        <span class="err-msg" id="err-fone">Informe um número válido.</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- DADOS DO VEÍCULO -->
+  <div class="card">
+    <p class="card-title">Dados do veículo</p>
+    <div class="form-row">
+      <div class="field">
+        <label for="valor">Valor do veículo (R$)<span class="req">*</span></label>
+        <input type="number" id="valor" value="45000" min="5000" step="1000">
+      </div>
+      <div class="field">
+        <label for="entrada">Entrada (R$)</label>
+        <input type="number" id="entrada" value="9000" min="0" step="500">
+        <span class="hint" id="hint-entrada"></span>
+      </div>
+    </div>
+    <div class="form-row">
+      <div class="field">
+        <label for="prazo">Prazo<span class="req">*</span></label>
+        <select id="prazo">
+          <option value="12">12 meses</option>
+          <option value="24">24 meses</option>
+          <option value="36" selected>36 meses</option>
+          <option value="48">48 meses</option>
+          <option value="60">60 meses</option>
+          <option value="72">72 meses</option>
+        </select>
+      </div>
+      <div class="field">
+        <label for="taxa-custom">Taxa personalizada (%)</label>
+        <input type="number" id="taxa-custom" step="0.01" placeholder="Ou escolha o banco">
+      </div>
+    </div>
+  </div>
+
+  <!-- BANCO -->
+  <div class="card">
+    <p class="card-title">Banco / financeira</p>
+    <span class="banco-hint">Taxas médias de referência — jun/2025. Sujeitas à análise de crédito.</span>
+    <div class="banco-grid">
+      <div class="bc on" data-taxa="1.49" data-nome="Santander" onclick="selB(this)">
+        <div class="bc-name">Santander</div><div class="bc-rate">~1,49% a.m.</div>
+      </div>
+      <div class="bc" data-taxa="1.39" data-nome="Itaú" onclick="selB(this)">
+        <div class="bc-name">Itaú</div><div class="bc-rate">~1,39% a.m.</div>
+      </div>
+      <div class="bc" data-taxa="1.45" data-nome="Bradesco" onclick="selB(this)">
+        <div class="bc-name">Bradesco</div><div class="bc-rate">~1,45% a.m.</div>
+      </div>
+      <div class="bc" data-taxa="1.35" data-nome="Banco do Brasil" onclick="selB(this)">
+        <div class="bc-name">Banco do Brasil</div><div class="bc-rate">~1,35% a.m.</div>
+      </div>
+      <div class="bc" data-taxa="1.29" data-nome="Caixa" onclick="selB(this)">
+        <div class="bc-name">Caixa</div><div class="bc-rate">~1,29% a.m.</div>
+      </div>
+      <div class="bc" data-taxa="1.55" data-nome="BV Financeira" onclick="selB(this)">
+        <div class="bc-name">BV Financeira</div><div class="bc-rate">~1,55% a.m.</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- RESULTADO -->
+  <div class="card">
+    <p class="card-title">Resultado da simulação</p>
+    <div class="metrics">
+      <div class="metric destaque">
+        <div class="metric-label">Parcela estimada</div>
+        <div class="metric-value" id="m-parcela">—</div>
+        <div class="metric-sub">Tabela Price</div>
+      </div>
+      <div class="metric">
+        <div class="metric-label">Valor financiado</div>
+        <div class="metric-value" id="m-fin">—</div>
+      </div>
+      <div class="metric">
+        <div class="metric-label">Total a pagar</div>
+        <div class="metric-value" id="m-total">—</div>
+      </div>
+      <div class="metric">
+        <div class="metric-label">Total de juros</div>
+        <div class="metric-value" id="m-juros">—</div>
+      </div>
+      <div class="metric">
+        <div class="metric-label">Taxa mensal</div>
+        <div class="metric-value" id="m-taxa">—</div>
+      </div>
+      <div class="metric">
+        <div class="metric-label">Taxa anual (ref.)</div>
+        <div class="metric-value" id="m-taxaa">—</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- FLUXO -->
+  <div class="card">
+    <p class="card-title">Fluxo de pagamento</p>
+    <button class="tgl-btn" id="tgl-btn" onclick="togFluxo()">
+      <span>Mostrar parcela a parcela</span>
+      <span class="tgl-icon" id="tgl-icon">▼</span>
+    </button>
+    <div class="fluxo-wrap" id="fluxo-wrap">
+      <div class="fluxo-scroll">
+        <table class="ftbl">
+          <thead>
+            <tr>
+              <th>#</th><th>Parcela</th><th>Juros</th><th>Amortização</th><th>Saldo</th>
+            </tr>
+          </thead>
+          <tbody id="fluxo-body"></tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <!-- AÇÕES -->
+  <button class="btn-finalizar" onclick="finalizar()">
+    <svg viewBox="0 0 24 24"><path d="M19 9h-4V3H9v6H5l7 7 7-7zM5 18v2h14v-2H5z"/></svg>
+    Baixar PDF e enviar simulação
+  </button>
+
+  <a class="btn-wpp" href="https://wa.me/553597184549" target="_blank" rel="noopener">
+    <svg viewBox="0 0 24 24"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
+    Ver catálogo de veículos no WhatsApp
+  </a>
+
+</div><!-- /container -->
+
+<!-- TOAST -->
+<div class="toast" id="toast"></div>
+
+<!-- FAB WHATSAPP -->
+<a class="fab" href="https://wa.me/553597184549" target="_blank" rel="noopener" aria-label="Falar no WhatsApp">
+  <svg viewBox="0 0 24 24"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
+</a>
+
+<!-- FOOTER -->
+<footer class="footer">
+  <strong>Baratocar Repasses</strong><br>
+  Av. Major Armando Rubens Storino, 5455 — Pouso Alegre, MG<br>
+  <a href="https://wa.me/553597184549">WhatsApp</a> &nbsp;|&nbsp;
+  <a href="https://instagram.com/baratocarrepasses" target="_blank">@baratocarrepasses</a><br><br>
+  Simulação meramente informativa. Aprovação sujeita à análise do banco de sua escolha.
+</footer>
+
+<!-- SCRIPTS -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.8.2/jspdf.plugin.autotable.min.js"></script>
+<script>
+var txSel=1.49,bancoNome='Santander',fluxoRows=[];
+var DEST=atob('Y2xlYmVyLnNldGluQGdtYWlsLmNvbQ==');
+
+function fmt(v){return v.toLocaleString('pt-BR',{style:'currency',currency:'BRL',minimumFractionDigits:2})}
+function fmtN(v,d){return v.toLocaleString('pt-BR',{minimumFractionDigits:d||2,maximumFractionDigits:d||2})}
+
+function maskTel(el){
+  var v=el.value.replace(/\D/g,'');
+  if(v.length>11)v=v.slice(0,11);
+  if(v.length<=10)v=v.replace(/^(\d{2})(\d{4})(\d{0,4})$/,'($1) $2-$3');
+  else v=v.replace(/^(\d{2})(\d{5})(\d{0,4})$/,'($1) $2-$3');
+  el.value=v.replace(/-$/,'');
+}
+
+function selB(el){
+  document.querySelectorAll('.bc').forEach(function(c){c.classList.remove('on')});
+  el.classList.add('on');
+  txSel=parseFloat(el.dataset.taxa);
+  bancoNome=el.dataset.nome;
+  document.getElementById('taxa-custom').value='';
+  calc();
+}
+
+function getTx(){
+  var c=parseFloat(document.getElementById('taxa-custom').value);
+  return(!isNaN(c)&&c>0)?c:txSel;
+}
+
+function pmt(pv,r,n){return r===0?pv/n:pv*(r*Math.pow(1+r,n))/(Math.pow(1+r,n)-1)}
+
+function calc(){
+  var vv=parseFloat(document.getElementById('valor').value)||0;
+  var ent=parseFloat(document.getElementById('entrada').value)||0;
+  var pr=parseInt(document.getElementById('prazo').value);
+  var tx=getTx()/100;
+  var fin=vv-ent;
+  var hint=document.getElementById('hint-entrada');
+  if(vv>0&&ent>=0)hint.textContent=((ent/vv)*100).toFixed(1)+'% do valor';
+  else hint.textContent='';
+  if(fin<=0||tx<=0||pr<=0){
+    ['m-parcela','m-fin','m-total','m-juros','m-taxa','m-taxaa'].forEach(function(id){document.getElementById(id).textContent='—'});
+    return;
+  }
+  var parcela=pmt(fin,tx,pr);
+  var total=parcela*pr+ent;
+  var juros=parcela*pr-fin;
+  var taxAn=(Math.pow(1+tx,12)-1)*100;
+  document.getElementById('m-parcela').textContent=fmt(parcela);
+  document.getElementById('m-fin').textContent=fmt(fin);
+  document.getElementById('m-total').textContent=fmt(total);
+  document.getElementById('m-juros').textContent=fmt(juros);
+  document.getElementById('m-taxa').textContent=fmtN(tx*100)+'% a.m.';
+  document.getElementById('m-taxaa').textContent=fmtN(taxAn,2)+'% a.a.';
+  var tbody=document.getElementById('fluxo-body');
+  tbody.innerHTML='';
+  fluxoRows=[];
+  var saldo=fin;
+  for(var i=1;i<=pr;i++){
+    var j2=saldo*tx,am=parcela-j2;
+    saldo=Math.max(0,saldo-am);
+    fluxoRows.push([i,fmt(parcela),fmt(j2),fmt(am),fmt(saldo)]);
+    var tr=document.createElement('tr');
+    tr.innerHTML='<td>'+i+'</td><td>'+fmt(parcela)+'</td><td class="tj">'+fmt(j2)+'</td><td class="ta">'+fmt(am)+'</td><td class="ts">'+fmt(saldo)+'</td>';
+    tbody.appendChild(tr);
+  }
+}
+
+var fviz=false;
+function togFluxo(){
+  fviz=!fviz;
+  var w=document.getElementById('fluxo-wrap');
+  var ic=document.getElementById('tgl-icon');
+  var btn=document.getElementById('tgl-btn');
+  w.classList.toggle('open',fviz);
+  ic.classList.toggle('open',fviz);
+  btn.querySelector('span').textContent=fviz?'Ocultar parcelas':'Mostrar parcela a parcela';
+}
+
+function validar(){
+  var ok=true;
+  var nome=document.getElementById('nome');
+  var fone=document.getElementById('fone');
+  if(!nome.value.trim()||nome.value.trim().length<2){
+    nome.classList.add('err');document.getElementById('err-nome').classList.add('show');ok=false;
+  }else{nome.classList.remove('err');document.getElementById('err-nome').classList.remove('show')}
+  var d=fone.value.replace(/\D/g,'');
+  if(d.length<10){
+    fone.classList.add('err');document.getElementById('err-fone').classList.add('show');ok=false;
+  }else{fone.classList.remove('err');document.getElementById('err-fone').classList.remove('show')}
+  return ok;
+}
+
+function gerarPDF(){
+  var jsPDF=window.jspdf.jsPDF;
+  var doc=new jsPDF({orientation:'portrait',unit:'mm',format:'a4'});
+  var vv=parseFloat(document.getElementById('valor').value)||0;
+  var ent=parseFloat(document.getElementById('entrada').value)||0;
+  var pr=parseInt(document.getElementById('prazo').value);
+  var tx=getTx();
+  var fin=vv-ent;
+  var parcela=pmt(fin,tx/100,pr);
+  var nome=document.getElementById('nome').value||'Cliente';
+  var fone=document.getElementById('fone').value||'—';
+  var data=new Date().toLocaleDateString('pt-BR');
+  var cRed=[192,57,43],cDark=[26,26,26],cGray=[120,120,120],cLight=[247,247,247],cWarnBg=[255,251,230],cWarn=[160,110,0];
+
+  // Header
+  doc.setFillColor(...cDark);
+  doc.rect(0,0,210,32,'F');
+  doc.setFillColor(...cRed);
+  doc.rect(0,29,210,3,'F');
+  doc.setTextColor(255,255,255);
+  doc.setFontSize(18);doc.setFont('helvetica','bold');
+  doc.text('BARATOCAR',14,13);
+  doc.setFontSize(9);doc.setFont('helvetica','normal');
+  doc.setTextColor(180,180,180);
+  doc.text('Intermediações e Repasses de Veículos',14,19);
+  doc.text('Simulação de Financiamento | Gerado em: '+data,14,24);
+  doc.setTextColor(255,255,255);
+  doc.setFontSize(9);
+  doc.text('Cliente: '+nome+'   |   WhatsApp: '+fone,14,29);
+
+  // Aviso
+  doc.setFillColor(...cWarnBg);
+  doc.setDrawColor(...cWarn);
+  doc.roundedRect(14,36,182,16,2,2,'FD');
+  doc.setTextColor(...cWarn);
+  doc.setFontSize(7.5);doc.setFont('helvetica','bold');
+  doc.text('⚠  SIMULAÇÃO INFORMATIVA — NÃO CONSTITUI PROPOSTA OU GARANTIA DE CRÉDITO',18,42);
+  doc.setFont('helvetica','normal');
+  doc.text('Aprovação, taxa real e parcelas definitivas dependem da análise do banco ou financeira escolhida pelo cliente.',18,48);
+
+  // Resumo
+  doc.setTextColor(...cDark);
+  doc.setFontSize(11);doc.setFont('helvetica','bold');
+  doc.text('Resumo da Simulação',14,60);
+
+  var taxAn=(Math.pow(1+tx/100,12)-1)*100;
+  doc.autoTable({
+    startY:63,
+    head:[['Parâmetro','Valor estimado']],
+    body:[
+      ['Valor do veículo',fmt(vv)],
+      ['Entrada',fmt(ent)+' ('+((ent/vv)*100).toFixed(1)+'%)'],
+      ['Valor financiado',fmt(fin)],
+      ['Banco / Financeira',bancoNome],
+      ['Taxa mensal de referência',fmtN(tx,2)+'% a.m.'],
+      ['Taxa anual de referência',fmtN(taxAn,2)+'% a.a.'],
+      ['Prazo',pr+' meses'],
+      ['Parcela estimada (Price)',fmt(parcela)],
+      ['Total estimado a pagar',fmt(parcela*pr+ent)],
+      ['Total estimado de juros',fmt(parcela*pr-fin)],
+    ],
+    theme:'grid',
+    headStyles:{fillColor:cRed,fontStyle:'bold',fontSize:10,textColor:[255,255,255]},
+    bodyStyles:{fontSize:10},
+    columnStyles:{0:{cellWidth:95},1:{cellWidth:77,halign:'right'}},
+    alternateRowStyles:{fillColor:cLight},
+    margin:{left:14,right:14},
+  });
+
+  var ay=doc.lastAutoTable.finalY+8;
+  doc.setFontSize(11);doc.setFont('helvetica','bold');doc.setTextColor(...cDark);
+  doc.text('Fluxo de Pagamento Estimado — Tabela Price',14,ay);
+
+  doc.autoTable({
+    startY:ay+4,
+    head:[['#','Parcela','Juros','Amortização','Saldo devedor']],
+    body:fluxoRows,
+    theme:'grid',
+    headStyles:{fillColor:cRed,fontStyle:'bold',fontSize:9,textColor:[255,255,255]},
+    bodyStyles:{fontSize:8.5},
+    columnStyles:{
+      0:{cellWidth:16,halign:'center'},
+      1:{cellWidth:40,halign:'right'},
+      2:{cellWidth:40,halign:'right',textColor:[163,45,45]},
+      3:{cellWidth:40,halign:'right',textColor:[39,174,96]},
+      4:{cellWidth:40,halign:'right'},
+    },
+    alternateRowStyles:{fillColor:cLight},
+    margin:{left:14,right:14},
+    didParseCell:function(d){
+      if(d.section==='body'&&d.column.index===2)d.cell.styles.textColor=[163,45,45];
+      if(d.section==='body'&&d.column.index===3)d.cell.styles.textColor=[39,174,96];
+    }
+  });
+
+  var pgCount=doc.internal.getNumberOfPages();
+  for(var i=1;i<=pgCount;i++){
+    doc.setPage(i);
+    doc.setFontSize(8);doc.setTextColor(...cGray);
+    doc.text('Baratocar Repasses | Av. Major Armando Rubens Storino, 5455 — Pouso Alegre, MG | @baratocarrepasses',14,290);
+    doc.text('Pág. '+i+'/'+pgCount,196,290,{align:'right'});
+  }
+  return doc;
+}
+
+function showToast(msg,dur){
+  var t=document.getElementById('toast');
+  t.textContent=msg;t.classList.add('show');
+  setTimeout(function(){t.classList.remove('show')},dur||5000);
+}
+
+function finalizar(){
+  if(!validar()){showToast('Preencha nome e WhatsApp antes de continuar.',3000);return}
+  if(fluxoRows.length===0){showToast('Preencha os dados do veículo.',3000);return}
+  var doc=gerarPDF();
+  var nomeArq=(document.getElementById('nome').value||'cliente').replace(/\s+/g,'_').toLowerCase();
+  var filename='simulacao_baratocar_'+nomeArq+'.pdf';
+  doc.save(filename);
+  var nome=document.getElementById('nome').value||'Cliente';
+  var fone=document.getElementById('fone').value||'—';
+  var vv=document.getElementById('valor').value;
+  var pr=document.getElementById('prazo').value;
+  var assunto=encodeURIComponent('Nova simulação — '+nome+' | Baratocar');
+  var corpo=encodeURIComponent(
+    'Nova simulação gerada pelo site:\n\n'+
+    '• Cliente: '+nome+'\n'+
+    '• WhatsApp: '+fone+'\n'+
+    '• Valor do veículo: R$ '+parseFloat(vv).toLocaleString('pt-BR')+'\n'+
+    '• Prazo: '+pr+' meses\n'+
+    '• Banco: '+bancoNome+'\n'+
+    '• Parcela estimada: '+document.getElementById('m-parcela').textContent+'\n\n'+
+    'ATENÇÃO: Simulação informativa. Aprovação sujeita ao banco escolhido.\n\n'+
+    'Anexe o arquivo PDF: '+filename
+  );
+  setTimeout(function(){
+    window.open('mailto:'+DEST+'?subject='+assunto+'&body='+corpo,'_blank');
+    showToast('✓ PDF baixado! E-mail preparado — anexe e envie.',6000);
+  },800);
+}
+
+// Events
+document.getElementById('fone').addEventListener('input',function(){maskTel(this)});
+['valor','entrada','prazo','taxa-custom'].forEach(function(id){
+  document.getElementById(id).addEventListener('input',calc);
+});
+['nome','fone'].forEach(function(id){
+  document.getElementById(id).addEventListener('input',function(){
+    this.classList.remove('err');
+    var e=document.getElementById('err-'+id);
+    if(e)e.classList.remove('show');
+  });
+});
+
+calc();
+</script>
+</body>
+</html>
